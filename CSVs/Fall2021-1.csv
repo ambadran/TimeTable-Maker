@@ -1,0 +1,14 @@
+0,,8:30 - 9:20,,,,9:30 - 10:20,,,,10:30 - 11:20,,,,11:30 - 12:20,,,,12:30 - 1:20,,,,1:30 - 2:20,,,,2:30 - 3:20,,,,3:30 - 4:20,,,
+1,,Course Code,Activity,Instructor,1,Course Code,Activity,Instructor,Room,Course Code,Activity,Instructor,Room,Course Code,Activity,Instructor,Room,Course Code,Activity,Instructor,Room,Course Code,Activity,Instructor,Room,Course Code,Activity,Instructor,Room,Course Code,Activity,Instructor,Room
+2,Sunday,ECEN324-01A,TUT,Mona elroh Alaa Eldin Ibrahim,139,ECEN324-01B,TUT,Mona elroh Alaa Eldin Ibrahim,139,,,,,,,,,ECEN324-01A,LAB,Mona elroh Alaa Eldin Ibrahim,G18,SPAN101-01,LEC,Carmen Delia Caro,online,ECEN324-01,LEC,Mohamed Saeed Darweesh,online,ECEN324-01,LEC,Mohamed Saeed Darweesh,online
+3,,,,,,,,,,,,,,,,,,,,,,,,,,SPAN101-01,LEC,Carmen Delia Caro,online,,,,
+4,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+5,Monday,ECEN314-01,LEC,ECE Professor 1,145,ECEN314-01,LEC,ECE Professor 1,145,ECEN324-01B,LAB,Mona elroh Alaa Eldin Ibrahim,264,ECEN312-01A,LAB,Alaa Osama Abdelfattah,G18,ECEN324-01C,LAB,Mona elroh Alaa Eldin Ibrahim,1,ECEN315-01,LEC,Mohamed Saeed Darweesh,138,ECEN314-01A,TUT,Mariam Salah Kandil,216,,,,
+6,,,,,,,,,,,,,,,,,,ECEN315-01,LEC,Mohamed Saeed Darweesh,138,,,,,,,,,,,,
+7,Tuesday,ECEN314-01B,TUT,Mariam Salah Kandil,116,ECEN302-01,LEC,ECE Professor 2,F45,ECEN315-01B,TUT,Yasmeen Waleed Etman,111,ECEN312-01,LEC,Ahmed Madian,F48,ECEN312-01,LEC,Ahmed Madian,F48,ECEN314-02,LEC,ECE Professor 1,F48,ECEN314-02,LEC,ECE Professor 1,F48,ECEN312-01B,LAB,Alaa Osama Abdelfattah,UB1
+8,,ECEN302-01,LEC,ECE Professor 2,F45,,,,,ECEN302-01,LEC,ECE Professor 2,F45,,,,,,,,,SPAN101-02,LEC,Carmen Delia Caro,online,SPAN101-02,LEC,Carmen Delia Caro,online,ECEN314-02A,LAB,Mariam Salah Kandil,1
+9,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,ECEN315-01A,TUT,Yasmeen Waleed Etman,106
+10,Wednesday,ECEN312-01A,TUT,Alaa Osama Abdelfattah,154,,,,,ECEN312-01B,TUT,Alaa Osama Abdelfattah,101,ECEN315-01C,LAB,Yasmeen Waleed Etman,104,,,,,,,,,ECEN315-01B,LAB,Yasmeen Waleed Etman,104,ECEN315-01A,LAB,Yasmeen Waleed Etman,104
+11,Thursday,ECEN314-02B,LAB,Mariam Salah Kandil,265,ECEN302-02,LEC,ECE Professor 2,9,ECEN314-02A,TUT,Mariam Salah Kandil,216,,,,,,,,,,,,,ECEN312-01C,LAB,Alaa Osama Abdelfattah,53,ECEN314-01A,LAB,Mariam Salah Kandil,53
+12,,ECEN302-02,LEC,ECE Professor 2,9,,,,,ECEN302-02,LEC,ECE Professor 2,9,,,,,,,,,,,,,ECEN314-01B,LAB,Mariam Salah Kandil,265,,,,
+13,,NSCI102-04,LEC,Ahmed Hamdy,144,NSCI102-04,LEC,Ahmed Hamdy,144,NSCI102-04,LEC,Ahmed Hamdy,144,NSCI102-04,LEC,Ahmed Hamdy,134,NSCI102-05,LEC,Ahmed Hamdy,134,NSCI102-05,LEC,Ahmed Hamdy,134,NSCI102-05,LEC,Ahmed Hamdy,134,,,,
