@@ -7,6 +7,9 @@ class Class:
     '''
     class to extract data from one single block
     '''
+
+    prefrence_code_letters = 'ECEN'
+
     def __init__(self, course_code, activity, time, day, room, instructor):
         self.course_code = course_code
         self.activity = activity
@@ -19,11 +22,19 @@ class Class:
     def from_string(cls, text):
 
         # course code, eg-ECEN314
-        subject_name = text[0:7]
+        subject_name = text[0:text.find(':')]
+
+        # for subjects that has different codes e.g - CSCI417/ECEN425
+        if '/' in subject_name and Class.prefrence_code_letters in subject_name:
+            subject_names = subject_name.split('/')
+            for name in subject_names:
+                if Class.prefrence_code_letters in name:
+                    subject_name = name
+
         section_place = text.find("Section: ") + 9
         if not section_place:
             raise ValueError("Didn't find 'Section: ' in the raw data block")
-        section = text[section_place:section_place+3].strip() #TODO: test subject_code is sth like ECEN312
+        section = text[section_place:section_place+3].strip() 
         course_code = f"{subject_name}-{section}"
 
         # activity - finding whether its a lecture or tutorial or lab
@@ -115,8 +126,6 @@ for i in blocks:
     parsed_classes.append(Class.from_string(i))
 
 
-
-
 # fixing the time attribute when it is two hours or more,
 # Must make it more than one class object
 days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday"]
@@ -161,12 +170,12 @@ for i in parsed_classes:
             first_num += 1
 
 
-
 # converting .time to column number and .day to row number
 for n, i in enumerate(parsed_classes_correct_time):
     parsed_classes_correct_time[n].day = days.index(i.day)
     parsed_classes_correct_time[n].time = times.index(i.time)
-      
+    
+
 # creating the big table            
 big_table = []
 for n in range(len(days)):
@@ -192,19 +201,27 @@ for n, i in enumerate(big_table):
 
 # finding the row number of each day
 day_row_num = []
+offset = 0
 for i in range(len(big_table)):
+
+    if len(big_table[i][0]) == 0:
+        offset += 1
+
     if i != 0:
-        day_row_num.append(len(big_table[i][0]) + day_row_num[i-1])
+        day_row_num.append(len(big_table[i][0]) + day_row_num[i-1] + offset)  # matching column 0 because all subject slots are now equal as per previous algorithm
     else:
-        day_row_num.append(len(big_table[i][0]))
+        day_row_num.append(len(big_table[i][0]) + offset)
+
 day_row_num.pop()
 day_row_num.insert(0, 0)
 
 ################# creating the csv list
 # converting the big_table list matrix to csv list format
+#TODO: bugfix: this code turns the list[list[list[Class]]] to list[list[Class]] where the more than one subject in one slot is put in 
+# more columns under the wanted day (aka row)
 csv_listt = []
 num = 0
-for n, i in enumerate(big_table):
+for n, i in enumerate(big_table):                                      
     for k in range(len(i[0])):
         csv_listt.append([])
         for a, b in enumerate(i):

@@ -2,7 +2,7 @@ import pyautogui as pag
 import pyperclip as pc
 import time
 import pickle
-from tkinter import *
+# from tkinter import *
 
 
 swapWindow = lambda: pag.hotkey('command', 'tab')
@@ -17,8 +17,8 @@ def go_page():
     swapWindow()
 
 
-searchboxPosX = 822
-searchboxPosY = 370
+searchboxPosX = 700 
+searchboxPosY = 340
 
 def search(subject_code):
     """
@@ -28,6 +28,8 @@ def search(subject_code):
     """
 
 
+    pag.click(x=searchboxPosX, y=searchboxPosY)
+    pag.click(x=searchboxPosX, y=searchboxPosY)
     pag.click(x=searchboxPosX, y=searchboxPosY)
 
     pag.press('backspace', presses=50)
@@ -52,11 +54,13 @@ def get_raw_data(subjects_wanted, filename):
             go_page()
             first_time = False
         scrollUp()
+        time.sleep(0.3)
         search(i)
 
         # waiting for loading to finish
-        while pag.locateOnScreen('newIdea.png') != None:
-            pass
+        # while pag.locateOnScreen('newIdea.png') != None:
+        #     pass
+        time.sleep(1.5)
 
         # getting the data 
         pag.scroll(-100)
@@ -66,6 +70,7 @@ def get_raw_data(subjects_wanted, filename):
         pag.hotkey('command', 'c')
 
         # Getting data
+        time.sleep(0.5)
         output = pc.paste()
 
         
@@ -86,7 +91,8 @@ if __name__ == '__main__':
     # subjects_wanted = ['ECEN312', 'ECEN314', 'ECEN315', 'ECEN324', 'ECEN302', 'SPAN101']
     # subjects_wanted = ['NSCI102']
     # subjects_wanted = ['CSCI463', 'ENGL201', 'CSCI305', 'CSCI451', 'CSCI419']
-    wanted_subjects = ['ENGL201']
+    # wanted_subjects = ['ENGL201']
+    wanted_subjects = ['ECEN428', 'ECEN438', 'ECEN433', 'ECEN425', 'ECEN493']
     raw_data = get_raw_data(wanted_subjects, 'output2')
     for i in raw_data:
         print(i)

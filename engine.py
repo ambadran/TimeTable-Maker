@@ -4,7 +4,7 @@ import shutil
 
 all_raw_data = []
 
-with open("Main_Timetable.csv", "r", encoding='mac_roman', newline='') as csv_file:
+with open("CSVs/Main_Timetable.csv", "r", encoding='mac_roman', newline='') as csv_file:
     csv_reader = csv.reader(csv_file, dialect=csv.excel)
     for line in csv_reader:
         all_raw_data.append(line)
