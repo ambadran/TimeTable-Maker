@@ -6,7 +6,7 @@ import pickle
 
 
 swapWindow = lambda: pag.hotkey('command', 'tab')
-scrollUp = lambda: pag.scroll('100')
+scrollUp = lambda: pag.scroll('10000')
 
 def go_page():
     """ 
@@ -60,10 +60,10 @@ def get_raw_data(subjects_wanted, filename):
         # waiting for loading to finish
         # while pag.locateOnScreen('newIdea.png') != None:
         #     pass
-        time.sleep(1.5)
+        time.sleep(2)
 
         # getting the data 
-        pag.scroll(-100)
+        pag.scroll(-10000)
         pag.moveTo(784, 871)
         pag.dragTo(10, 10, button='left')
         pag.moveTo(1292, 861)
@@ -92,7 +92,8 @@ if __name__ == '__main__':
     # subjects_wanted = ['NSCI102']
     # subjects_wanted = ['CSCI463', 'ENGL201', 'CSCI305', 'CSCI451', 'CSCI419']
     # wanted_subjects = ['ENGL201']
-    wanted_subjects = ['ECEN428', 'ECEN438', 'ECEN433', 'ECEN425', 'ECEN493']
+    # wanted_subjects = ['ECEN428', 'ECEN438', 'ECEN433', 'ECEN425', 'ECEN493']
+    wanted_subjects = ['CSCI205', 'CSCI112', 'MATH112', 'HUMA102']
     raw_data = get_raw_data(wanted_subjects, 'output2')
     for i in raw_data:
         print(i)

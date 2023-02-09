@@ -129,7 +129,7 @@ for i in blocks:
 # fixing the time attribute when it is two hours or more,
 # Must make it more than one class object
 days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday"]
-times = ["8:30 - 9:20", "9:30 - 10:20", "10:30 - 11:20", "11:30 - 12:20", "12:30 - 1:20", "1:30 - 2:20", "2:30 - 3:20", "3:30 - 4:20", '4:30 - 5:20', '5:30 - 6:20']
+times = ["8:30 - 9:20", "9:30 - 10:20", "10:30 - 11:20", "11:30 - 12:20", "12:30 - 1:20", "1:30 - 2:20", "2:30 - 3:20", "3:30 - 4:20", '4:30 - 5:20', '5:30 - 6:20', '6:30 - 7:20', '7:30 - 8:20']
 twelve_hour_system = [i for i in range(0, 13)]
 twelve_hour_system.extend(twelve_hour_system[1:])
 
@@ -256,7 +256,7 @@ for n, i in enumerate(csv_list):
 
 # creating the first row
 current_num = 0
-first_row = ["8:30 - 9:20", "9:30 - 10:20", "10:30 - 11:20", "11:30 - 12:20", "12:30 - 1:20", "1:30 - 2:20", "2:30 - 3:20", "3:30 - 4:20"]
+first_row = times
 for i in range(len(first_row)):
     for n in range(3):
         first_row.insert(current_num + 1, '')
@@ -265,6 +265,7 @@ for i in range(len(first_row)):
 first_row.insert(0, '')
 
 # creating the second row
+#TODO: duplicated row in the main timetable output
 part = ["Course Code", "Activity", "Instructor", "Room"]
 second_row = ['']
 for _ in range(len(times)):
