@@ -27,7 +27,7 @@ for n, i in enumerate(raw_days_data):
         raw_days_data[n][j] = k[2:]
 
 days = ["SUNDAY", "MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY"]
-times = ["8:30 - 9:20", "9:30 - 10:20", "10:30 - 11:20", "11:30 - 12:20", "12:30 - 1:20", "1:30 - 2:20", "2:30 - 3:20", "3:30 - 4:20"]
+times = ["8:30 - 9:20", "9:30 - 10:20", "10:30 - 11:20", "11:30 - 12:20", "12:30 - 1:20", "1:30 - 2:20", "2:30 - 3:20", "3:30 - 4:20", '4:30 - 5:20', '5:30 - 6:20', '6:30 - 7:20', '7:30 - 8:20']
 
 class subject_unorganised:
     def __init__(self, name, activity, instructor, room, day, time):
@@ -159,6 +159,19 @@ class subject:
         self.instructor = instructor
         self.times = times
         self.room = room
+
+    @property
+    def sub_name(self):
+        '''
+        reutrn sub name only without section or activity
+        '''
+        return self.name[:self.name.index('-')]
+
+    def __repr__(self):
+        return str(self.__dict__)
+    
+    def __str__(self):
+        return f"{self.name} @ {self.times}"
 
 ### LEC ####################################
 for i in LEC: #################################### testing
@@ -383,14 +396,18 @@ def testDuplicateTimeTables(TimeTables, mode):
             return f"Duplicate Timetables: {filtered_memo}"
 
 def createCSVlists(timeTables, mode):
-    """creates a csv list to make the csv file
-        mode True is for one timetables
-        mode False is for many timetable"""
+    """
+    creates a csv list to make the csv file
+    mode True is for one timetables
+    mode False is for many timeTables
+    """
+
+    global days 
+    global times
+
     if mode:
         masterlist = []
-        days = ["SUNDAY", "MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY"]
-        times = ["8:30 - 9:20", "9:30 - 10:20", "10:30 - 11:20", "11:30 - 12:20", "12:30 - 1:20", "1:30 - 2:20",
-                 "2:30 - 3:20", "3:30 - 4:20"]
+
         for i in days:
             masterlist.append([i])
         for a in range(len(days)):
@@ -410,9 +427,7 @@ def createCSVlists(timeTables, mode):
         masterlists = []
         for w in timeTables:
             masterlist = []
-            days = ["SUNDAY", "MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY"]
-            times = ["8:30 - 9:20", "9:30 - 10:20", "10:30 - 11:20", "11:30 - 12:20", "12:30 - 1:20", "1:30 - 2:20",
-                     "2:30 - 3:20", "3:30 - 4:20"]
+
             for i in days:
                 masterlist.append([i])
             for a in range(len(days)):
@@ -433,13 +448,22 @@ def createCSVlists(timeTables, mode):
 
 
 def exportTimeTable(timeTableList, mode):
-    """creates a csv file to display timetables
+    """
+    creates a csv file to display timetables
     mode True is for one timetables
-    mode False is for many timetable"""
+    mode False is for many TimeTable
+    """
+
+    global times
+
     if mode:
         with open("TimeTable.csv", mode="w") as timeTable:
             timeTable_writer = csv.writer(timeTable, delimiter=",", quotechar='"')
-            timeTable_writer.writerow(['', "8:30 - 9:20", "9:30 - 10:20", "10:30 - 11:20", "11:30 - 12:20", "12:30 - 1:20", "1:30 - 2:20", "2:30 - 3:20", "3:30 - 4:20"])
+
+            first_row = ['']
+            first_row.extend(times)
+            timeTable_writer.writerow(first_row)
+
             for i in range(len(timeTableList)):
                 timeTable_writer.writerow(timeTableList[i])
     else:
@@ -452,9 +476,25 @@ def exportTimeTable(timeTableList, mode):
         for s in range(len(timeTableList)):
             with open(f"TimeTable{s}.csv", mode="w") as timeTable:
                 timeTable_writer = csv.writer(timeTable, delimiter=",", quotechar='"')
-                timeTable_writer.writerow(['', "8:30 - 9:20", "9:30 - 10:20", "10:30 - 11:20", "11:30 - 12:20", "12:30 - 1:20", "1:30 - 2:20", "2:30 - 3:20", "3:30 - 4:20"])
+
+                first_row = ['']
+                first_row.extend(times)
+                timeTable_writer.writerow(first_row)
+
                 for i in range(len(timeTableList[s])):
                     timeTable_writer.writerow(timeTableList[s][i])
+
+
+def makeTimeTables(wanted_subjects):
+    for i in wanted_subjects:
+        if not checkSubinMain(i):
+            raise LookupError(f"{i} not found in Main TimeTable")
+    return generateTimeTables(generateAllSublist(wanted_subjects), "debug")
+
+
+def exportCSV(TimeTable):
+    exportTimeTable(createCSVlists(TimeTable, False), False)
+
 
 def checkSubinMain(subject):
     '''checks if subject is found in main timetable or not'''
@@ -472,7 +512,8 @@ if __name__ == "__main__":
     #      for n in i:
     #          print(n.__dict__)
 
-    wanted_subs = ['ECEN312', 'ECEN314', 'ECEN315', 'ECEN324', 'ECEN302', 'SPAN101', 'NSCI102']
+    # wanted_subs = ['ECEN312', 'ECEN314', 'ECEN315', 'ECEN324', 'ECEN302', 'SPAN101', 'NSCI102']
+    wanted_subs = ['CSCI205', 'CSCI112', 'HUMA102', 'MATH112']
     for i in generateAllSublist(wanted_subs):
         print(i)
         for n in i:

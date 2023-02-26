@@ -2,14 +2,6 @@ from engine import *
 from timetable_generating_algorithm import *
 from Filters import *
 
-def makeTimeTables(wanted_subjects):
-    for i in wanted_subjects:
-        if not checkSubinMain(i):
-            raise LookupError(f"{i} not found in Main TimeTable")
-    return generateTimeTables(generateAllSublist(wanted_subjects), "debug")
-
-def exportCSV(TimeTable):
-    exportTimeTable(createCSVlists(TimeTable, False), False)
 
 print("""
 
