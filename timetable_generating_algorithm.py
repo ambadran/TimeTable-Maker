@@ -1,9 +1,10 @@
 from engine import *
 from abc import ABC, abstractmethod
 import time
-from enum import ENUM
+from enum import Enum
+import pickle
 
-class Modes(ENUM):
+class Modes(Enum):
     NORMAL = 1
     DEBUG = 2
 
@@ -59,7 +60,10 @@ class DistinctTimesConstraint(Constraint):
 
         A valid timetable is one where -No overlapping subjects time-wise-
         '''
-        times_list = [subject.time for subject in assignment.values()]
+        times_list = []
+        for subject in assignment.values():
+            for time in subject.times:
+                times_list.append(time)
         times_set = set(times_list)
 
         return len(times_list) == len(times_set)
@@ -71,7 +75,7 @@ class CSP:
     Constraint Satisfactory Problem framework class
     '''
 
-    def __init__(self, variables: list[str], domains: dict[str: list[subjects]]):
+    def __init__(self, variables: list[str], domains: dict[str: list[subject]]):
         '''
         assigning variables list, domains list and creating an empty constraints dict for CSP framework
         '''
@@ -120,7 +124,61 @@ class CSP:
 
         :return : list of list of subjects, list of subjects which satisfy constraints, aka list of TimeTables :)
         '''
-        pass
+        results = []
+
+        possible_time_table_to_be_found = True
+
+        last_possible_value_inds = [0 for i in range(len(self.variables))]
+        
+        while possible_time_table_to_be_found:
+
+            assignments = {}
+
+            current_layer = 0
+
+
+            while len(assignments) < len(self.variables):
+
+                current_variable = self.variables[current_layer]
+                current_domain = self.domains[current_variable]
+                last_possible_value_ind = last_possible_value_inds[current_layer]
+                
+                for possible_value_ind in range(last_possible_value_ind, len(current_domain)):
+
+                    assignments[current_variable] = current_domain[last_possible_value_ind+possible_value_ind]
+
+                    if self.consistent(current_variable, assignments):
+
+                        last_possible_value_inds[current_layer] = possible_value_ind
+
+                        current_layer += 1
+
+                        break
+                else:
+                    # no value in this layer is consistent with current combination of values in assignments dict
+                    # Thus, backtracking
+                    last_possible_value_inds[current_layer] += 1
+                    if last_possible_value_inds[current_layer] == len(current_domain):
+                        last_possible_value_inds[current_layer] = 0
+
+                    current_layer -= 1
+
+                    if current_layer == -1:
+                        possible_time_table_to_be_found = False
+                        break  # No possible timetable found
+
+            for ind, val in enumerate(last_possible_value_inds):
+                if val == len(current_domain):
+                    last_possible_value_inds[ind] = 0
+                else:
+                    last_possible_value_inds[ind] += 1
+
+            results.append(list(assignments.values()))
+            print([(sub.name, sub.times) for sub in results[-1]])
+            print()
+
+        return results
+
 
 
 def generateTimeTables(ALL_SUBJECTS: list[list[subject]], mode=Modes.NORMAL) -> list[list[subject]]:
@@ -130,14 +188,13 @@ def generateTimeTables(ALL_SUBJECTS: list[list[subject]], mode=Modes.NORMAL) -> 
     '''
 
     if mode == Modes.DEBUG:
+        #TODO: develop proper performance code
         pass
 
     # Creating CSP environment
     variables = get_variables(ALL_SUBJECTS)
-    print(variables)
 
     domains = get_domains(variables, ALL_SUBJECTS)
-    print(list(domains.values())[0][4])
 
     csp = CSP(variables, domains)
     csp.add_constraint(DistinctTimesConstraint(variables))
@@ -146,7 +203,8 @@ def generateTimeTables(ALL_SUBJECTS: list[list[subject]], mode=Modes.NORMAL) -> 
     all_results = csp.find_all_solutions()
 
     if mode == Modes.DEBUG:
-        spent_time = time.time() - start_time
+        #TODO: develop proper performance code
+        # spent_time = time.time() - start_time
         print(f"Total number of lectures, tutorials and labs: {len_sub}")
         if spent_time < 60:
             print(f"Time Spent: {round(spent_time)} seconds")
