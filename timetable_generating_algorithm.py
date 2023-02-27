@@ -4,6 +4,9 @@ import time
 from enum import Enum
 import pickle
 
+pickle_file_path = 'pickle_files/time_table_generating_algorithm_output.pkl'
+
+
 class Modes(Enum):
     NORMAL = 1
     DEBUG = 2
@@ -237,6 +240,7 @@ class CSP:
         '''
         pass
 
+
 def generateTimeTables(ALL_SUBJECTS: list[list[subject]], mode=Modes.NORMAL) -> list[list[subject]]:
     '''
     :param ALL_SUBJECTS:
@@ -282,6 +286,13 @@ def generateTimeTables(ALL_SUBJECTS: list[list[subject]], mode=Modes.NORMAL) -> 
     return result
 
 
+def retrieveTimeTable():
+    # Getting the stored Timetables variable:
+    with open('', 'rb') as f:
+        TimeTables = pickle.load(f)
+    return TimeTables
+
+
 
 if __name__ == "__main__":
 
@@ -297,6 +308,8 @@ if __name__ == "__main__":
 
     for sub in result:
         print(sub.name, sub.section, sub.times) # FOR DEBUGGING
+
+    print()
     completeTest(wanted_subs, [result])
 
 
