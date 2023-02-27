@@ -44,8 +44,9 @@ ALL_CLASSES_unorganised = []
 for n, i in enumerate(raw_days_data):
     for a, b in enumerate(i):
         for j, k in enumerate(times):
-            if b[j*4] != '':
-                ALL_CLASSES_unorganised.append(subject_unorganised(b[j*4], b[j*4+1], b[j*4+2], b[j*4+3], days[n], k))
+            if j*4 < len(b):
+                if b[j*4] != '':
+                    ALL_CLASSES_unorganised.append(subject_unorganised(b[j*4], b[j*4+1], b[j*4+2], b[j*4+3], days[n], k))
 
 
 # main_timetable = []
@@ -394,6 +395,12 @@ def testDuplicateTimeTables(TimeTables, mode):
             return "There is no duplicate timetables in this timetables."
         else:
             return f"Duplicate Timetables: {filtered_memo}"
+
+def completeTest(wanted_subjects, TimeTables):
+    ALL_SUBJECTS = generateAllSublist(wanted_subjects)
+    print(testDuplicateTimeTables(TimeTables, False))  # testing for duplicate timetables
+    print(testTimeTables(TimeTables, ALL_SUBJECTS, False))  # testing all timetables for validity
+
 
 def createCSVlists(timeTables, mode):
     """

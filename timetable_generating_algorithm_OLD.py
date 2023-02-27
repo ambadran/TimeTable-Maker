@@ -305,10 +305,6 @@ def generateTimeTables(ALL_SUBJECTS, mode):
     else:
         raise ValueError("mode not supported")
 
-def completeTest(wanted_subjects, TimeTables):
-    ALL_SUBJECTS = generateAllSublist(wanted_subjects)
-    print(testDuplicateTimeTables(TimeTables, False))  # testing for duplicate timetables
-    print(testTimeTables(TimeTables, ALL_SUBJECTS, False))  # testing all timetables for validity
 
 def retrieveTimeTable():
     # Getting the stored Timetables variable:

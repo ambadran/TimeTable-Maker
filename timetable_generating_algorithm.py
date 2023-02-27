@@ -20,6 +20,7 @@ def get_variables(ALL_SUBJECTS: list[list[subject]]) -> list[str]:
 
     return variables
 
+
 def get_domains(variables: list[str], ALL_SUBJECTS: list[list[subject]]) -> dict[str: list[subject]]:
     '''
     :ALL_SUBJECTS: list of all possible subject objects for wanted subjects
@@ -56,17 +57,51 @@ class DistinctTimesConstraint(Constraint):
         :param assignment: a dictionary which states what specific subject is choosen for each wanted subject
                             key is a variables list value and value is one of the subject object in the list of
                             the corresponding domain value
-        :return : bool of whether the argument assignment is a valid assignment, aka a valid timetables
+        :return : bool of whether the argument assignment is a valid assignment, aka a valid timetable
 
         A valid timetable is one where -No overlapping subjects time-wise-
         '''
         times_list = []
         for subject in assignment.values():
-            for time in subject.times:
-                times_list.append(time)
+                times_list.extend(subject.times)
+
         times_set = set(times_list)
 
         return len(times_list) == len(times_set)
+
+
+class SameSectionConstraint(Constraint):
+    '''
+    This constraint class imposes one subject must have same section in Lecture, tutorial and lab classes
+    '''
+    def __init__(self, variables: list[str]):
+        super().__init__(variables) # This constraint affects all subjects, all variables in varaibles list
+
+    def satisfied(self, assignment: dict[str: subject]) -> bool:
+        '''
+        :param assignment: a dictionary which states what specific subject is choosen for each wanted subject
+                            key is a variables list value and value is one of the subject object in the list of
+                            the corresponding domain value
+        :return: bool of whether the argument assignment is a valid assignment, aka a valid timetable
+
+        section attribute of every subject that is of the same sub name must the same
+        '''
+
+        # creating lists of the section numbers in each subject
+        sub_dict = {}
+        for sub in assignment.values():
+            if sub.sub_name not in sub_dict.keys():
+                sub_dict[sub.sub_name] = [sub.section]
+            else:
+                sub_dict[sub.sub_name].append(sub.section)
+
+        # checking the list of section numbers they must have all same values
+        for section_list in sub_dict.values():
+            if len(set(section_list)) != 1:
+                return False
+
+        return True
+
 
 
 
@@ -89,7 +124,6 @@ class CSP:
             if variable not in self.domains:
                 raise LookupError("Variable not in domain dictionary")
 
-
     def add_constraint(self, constraint: Constraint):
         '''
         add the argument constraint object to every object in the constraint .variable attribute
@@ -100,7 +134,6 @@ class CSP:
                 raise LookupError("Constraint affecting a variable that is not in the CSP framework")
 
             self.constraints[variable].append(constraint)
-
 
     def consistent(self, variable: str, assignment: dict[str: subject]) -> bool:
         '''
@@ -117,69 +150,92 @@ class CSP:
 
         return True
 
-    
+    def find_first_solution(self) -> list[subject]:
+        '''
+        DP Algorithm to find the first timetable it finds
+
+        :return : list of list of subjects, list of subjects which satisfy constraints, aka list of TimeTables :)
+        '''
+        assignments = {}
+
+        current_layer = 0
+
+        last_possible_value_inds = []
+
+        visited = set()
+
+        while len(assignments) < len(self.variables):
+
+            current_variable = self.variables[current_layer]
+            current_domain = self.domains[current_variable]
+
+            if current_layer == len(last_possible_value_inds):
+                # never reached this level before
+                last_possible_value_inds.append(0)
+
+            elif current_layer > len(last_possible_value_inds):
+                raise ValueError("WTF?!??!")
+
+            last_possible_value_ind = last_possible_value_inds[current_layer]
+
+            # print(current_variable, current_layer) # FOR DEBUGGING
+            
+            for possible_value_ind in range(last_possible_value_ind, len(current_domain)):
+
+                assignments[current_variable] = current_domain[possible_value_ind]
+
+                last_possible_value_inds[current_layer] = possible_value_ind
+                # print(possible_value_ind, len(current_domain)) # FOR DEBUGGING
+
+                if self.consistent(current_variable, assignments) and tuple(last_possible_value_inds) not in visited:
+
+                    # print(last_possible_value_inds) # FOR DEBUGGING
+
+                    current_layer += 1
+
+                    break
+                else:
+                    visited.add(tuple(last_possible_value_inds))
+            else:
+                # no value in this layer is consistent with current combination of values in assignments dict
+                # Thus, backtracking
+
+                # print('backtracking') # FOR DEBUGGING
+
+                if current_variable in assignments:
+                    del assignments[current_variable]
+
+                visited.add(tuple(last_possible_value_inds))  #TODO: try type casting to tuple, maybe will be faster
+
+                last_possible_value_inds[current_layer] = 0
+
+                current_layer -= 1
+
+                last_possible_value_inds[current_layer] += 1
+
+                # print(last_possible_value_inds) # FOR DEBUGGING
+
+                if current_layer == -1:
+                    possible_time_table_to_be_found = False
+                    return None # No possible timetable found
+
+        timetable = list(assignments.values())
+        # for sub in timetable:
+            # print(sub.name, sub.section, sub.times) # FOR DEBUGGING
+
+        return timetable
+
+
     def find_all_solutions(self) -> list[list[subject]]:
         '''
         DP Algorithm to find every possible solution to this CSP
 
         :return : list of list of subjects, list of subjects which satisfy constraints, aka list of TimeTables :)
+
+        exact same algorithm as find_first_solution but now whenever it finds a correct timetable,
+        it just adds it to visited set
         '''
-        results = []
-
-        possible_time_table_to_be_found = True
-
-        last_possible_value_inds = [0 for i in range(len(self.variables))]
-        
-        while possible_time_table_to_be_found:
-
-            assignments = {}
-
-            current_layer = 0
-
-
-            while len(assignments) < len(self.variables):
-
-                current_variable = self.variables[current_layer]
-                current_domain = self.domains[current_variable]
-                last_possible_value_ind = last_possible_value_inds[current_layer]
-                
-                for possible_value_ind in range(last_possible_value_ind, len(current_domain)):
-
-                    assignments[current_variable] = current_domain[last_possible_value_ind+possible_value_ind]
-
-                    if self.consistent(current_variable, assignments):
-
-                        last_possible_value_inds[current_layer] = possible_value_ind
-
-                        current_layer += 1
-
-                        break
-                else:
-                    # no value in this layer is consistent with current combination of values in assignments dict
-                    # Thus, backtracking
-                    last_possible_value_inds[current_layer] += 1
-                    if last_possible_value_inds[current_layer] == len(current_domain):
-                        last_possible_value_inds[current_layer] = 0
-
-                    current_layer -= 1
-
-                    if current_layer == -1:
-                        possible_time_table_to_be_found = False
-                        break  # No possible timetable found
-
-            for ind, val in enumerate(last_possible_value_inds):
-                if val == len(current_domain):
-                    last_possible_value_inds[ind] = 0
-                else:
-                    last_possible_value_inds[ind] += 1
-
-            results.append(list(assignments.values()))
-            print([(sub.name, sub.times) for sub in results[-1]])
-            print()
-
-        return results
-
-
+        pass
 
 def generateTimeTables(ALL_SUBJECTS: list[list[subject]], mode=Modes.NORMAL) -> list[list[subject]]:
     '''
@@ -195,12 +251,17 @@ def generateTimeTables(ALL_SUBJECTS: list[list[subject]], mode=Modes.NORMAL) -> 
     variables = get_variables(ALL_SUBJECTS)
 
     domains = get_domains(variables, ALL_SUBJECTS)
+    # for i in range(len(domains)):
+    #     print(domains[variables[i]][0])
 
     csp = CSP(variables, domains)
     csp.add_constraint(DistinctTimesConstraint(variables))
+    csp.add_constraint(SameSectionConstraint(variables))
 
     # Getting all possible solution to CSP
-    all_results = csp.find_all_solutions()
+    result = csp.find_first_solution()
+
+
 
     if mode == Modes.DEBUG:
         #TODO: develop proper performance code
@@ -213,11 +274,12 @@ def generateTimeTables(ALL_SUBJECTS: list[list[subject]], mode=Modes.NORMAL) -> 
         print(f"Total number of possible TimeTables: {len(TimeTables)}")
 
 
-    # Saving result in pkl file
-    with open('output.pkl', 'wb') as f:
-        pickle.dump(all_results, f)
+    # # Saving result in pkl file
+    # with open('output.pkl', 'wb') as f:
+    #     pickle.dump(all_results, f)
 
-    return all_results
+    # return all_results
+    return result
 
 
 
@@ -225,11 +287,18 @@ if __name__ == "__main__":
 
     # wanted_subjects = ["ECEN204", "MATH206", "ECEN203", "ECEN202", "ENTR301", "ENGL102"]
 
-    wanted_subs = ['CSCI205', 'CSCI112', 'HUMA102', 'MATH112']
+    # wanted_subs = ['CSCI205', 'CSCI112', 'HUMA102', 'MATH112']
+
+    wanted_subs = ['ECEN311', 'ECEN313', 'HUMA002', 'ENGL102', 'ENTR301', 'MATH206', 'NSCI102', 'CHEM001']
 
     ALL_SUBJECTS = generateAllSublist(wanted_subs)
 
-    timetables = generateTimeTables(ALL_SUBJECTS)
+    result = generateTimeTables(ALL_SUBJECTS)
+
+    for sub in result:
+        print(sub.name, sub.section, sub.times) # FOR DEBUGGING
+    completeTest(wanted_subs, [result])
+
 
     # TimeTables = generateTimeTables(ALL_SUBJECTS, "debug")
     # TimeTables = retrieveTimeTable()
