@@ -27,13 +27,15 @@ def printProgressBar (iteration, total, prefix = '', suffix = '', decimals = 1, 
         print()
 
 def generateTimeTables(ALL_SUBJECTS, mode):
-    """Main function is to generate all possible timetables that has 3 characteristics:
+    """
+    Main function is to generate all possible timetables that has 3 characteristics:
     1- no overlapping subjects time-wise
     2- all wanted subjects with all their lec, tut and labs are present in each timetable generated
     3- no duplicate timetables
     mode="debug" --> return len_sub, number of possible timetables, calctime and export TimeTables to pickle
             object, all in a tuble in this order
-    mode="exec" --> exports TimeTables to pickle object and return spent_time only"""
+    mode="exec" --> exports TimeTables to pickle object and return spent_time only 
+    """
     len_sub = len(ALL_SUBJECTS)
     TimeTables = []
     start_time = time.time()
