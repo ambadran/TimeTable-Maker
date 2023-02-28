@@ -2,6 +2,8 @@ from engine import *
 import pickle
 import time
 
+pickle_file_path = "pickle_files/old_timetable_algorithm_algorithm_output.pkl"
+
 # Print iterations progress
 def printProgressBar (iteration, total, prefix = '', suffix = '', decimals = 1, length = 100, fill = '█', printEnd = "\r"):
     """
@@ -293,13 +295,13 @@ def generateTimeTables(ALL_SUBJECTS, mode):
         else:
             print(f"Time Spend: {round(spent_time / 60)}min {round(spent_time % 60)}sec")
         # Saving the Timetables variable into a pickle storage file:
-        with open('output.pkl', 'wb') as f:
+        with open(pickle_file_path, 'wb') as f:
             pickle.dump(TimeTables, f)
         print(f"Total number of possible TimeTables: {len(TimeTables)}")
         return TimeTables
     elif mode == "exec":
         # Saving the Timetables variable into a pickle storage file:
-        with open('output.pkl', 'wb') as f:
+        with open(pickle_file_path, 'wb') as f:
             pickle.dump(TimeTables, f)
         return spent_time
     else:
@@ -308,13 +310,35 @@ def generateTimeTables(ALL_SUBJECTS, mode):
 
 def retrieveTimeTable():
     # Getting the stored Timetables variable:
-    with open('output.pkl', 'rb') as f:
+    with open(pickle_file_path, 'rb') as f:
         TimeTables = pickle.load(f)
     return TimeTables
 
 if __name__ == "__main__":
-    wanted_subjects = ["ECEN204", "MATH206", "ECEN203", "ECEN202", "ENTR301", "ENGL102"]
-    ALL_SUBJECTS = generateAllSublist(wanted_subjects)
-    TimeTables = generateTimeTables(ALL_SUBJECTS, "debug")
-    # TimeTables = retrieveTimeTable()
-    completeTest(wanted_subjects, TimeTables)
+
+    # wanted_subjects = ["ECEN204", "MATH206", "ECEN203", "ECEN202", "ENTR301", "ENGL102"]
+
+    wanted_subs = ['ECEN311', 'ECEN313', 'HUMA002', 'ENGL102', 'ENTR301', 'MATH206', 'CHEM001']
+
+    ALL_SUBJECTS = generateAllSublist(wanted_subs)
+    print(len(ALL_SUBJECTS))
+
+    # TimeTables = generateTimeTables(ALL_SUBJECTS, "debug")
+
+    TimeTables = retrieveTimeTable()
+    # print(TimeTables)
+    print(len(TimeTables))
+    for sub in TimeTables[0]:
+        print(sub.name, sub.section, sub.times) # FOR DEBUGGING
+
+    print()
+    completeTest(wanted_subs, TimeTables)
+
+# [1, 1, 0, 1, 2, 1, 2, 0, 1, 0, 0, 0, 3, 3]
+# the only correct timetables from the subjects wanted_subs = ['ECEN311', 'ECEN313', 'HUMA002', 'ENGL102', 'ENTR301', 'MATH206', 'CHEM001'] with no time overlapping and same section constraints
+        # visited.add(tuple([1, 1, 0, 1, 2, 1, 2, 0, 1, 0, 0, 0, 3, 3]))
+        # visited.add(tuple([1, 1, 0, 1, 2, 1, 2, 0, 1, 0, 0, 0, 3, 5]))
+        # visited.add(tuple([1, 1, 2, 1, 2, 1, 2, 0, 1, 0, 0, 0, 3, 3]))
+        # visited.add(tuple([1, 1, 2, 1, 2, 1, 2, 0, 1, 0, 0, 0, 3, 5]))
+
+

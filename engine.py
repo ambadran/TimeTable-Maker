@@ -1,6 +1,7 @@
 import csv
 import os
 import shutil
+from typing import Optional
 
 all_raw_data = []
 
@@ -193,9 +194,11 @@ def generateAllSublist(name_subjects):
 
 
 def check_subject(subject, possible_timetable):
-    """in the timetable generating algorithm, this function checks
-     subjects to not overlap with other subjects already
-    in the possible timetable"""
+    """
+    In the timetable generating algorithm, this function checks
+    subjects to not overlap with other subjects already
+    in the possible timetable 
+    """
     for i in possible_timetable:
         for a in i.times:
             for b in subject.times:
@@ -205,7 +208,13 @@ def check_subject(subject, possible_timetable):
         return True
 
 def check_timetable(timetable):
-    """checks if given timetable has no time overlapping subjects"""
+    """
+    checks if given timetable has no time overlapping subjects 
+    """
+
+    if type(TimeTable) != list or len(set([type(i) for i in TimeTable])) != 1 or type(TimeTable[0]) != subject:
+        raise ValueError("TimeTable Argument Must be list of subject class objects")
+
     condition = True
     for n, i in enumerate(timetable):
         for l, k in enumerate(timetable):
@@ -220,12 +229,16 @@ def check_timetable(timetable):
         else:
             return False
 
-def testTimeTable(TimeTable, ALL_SUBJECTS, mode):
+def testTimeTable(TimeTable: list[subject], ALL_SUBJECTS: list[list[subject]], mode: bool):
     """This function tests a timetable for 2 things:
     TEST1-checks if the timetable generated doesn't have any subjects overlaping in time
     TEST2-checks if the timetable has all the subjects with all their lecs, tuts and labs
     mode False return True or False depending on whether the timetable is True in both tests or not
-    mode True returns a detailed analysis of the tests"""
+    mode True returns a detailed analysis of the tests 
+    """
+
+    if type(TimeTable) != list or len(set([type(i) for i in TimeTable])) != 1 or type(TimeTable[0]) != subject:
+        raise ValueError("TimeTable Argument Must be list of subject class objects")
 
     result1 = False  # for test1
     result2 = False  # for test2
@@ -260,13 +273,21 @@ def testTimeTable(TimeTable, ALL_SUBJECTS, mode):
     result2 = x
 
     if mode:
+        result1 = 'Pass' if result1 else 'Failed'
+        result2 = 'Pass' if result2 else 'Failed'
         return f"""Overlaping Test: {result1}\nContains ALl Subject Test: {result2}\n{f'Subjects not in TimeTable: {[n.name for n in subjects]}' if not result2 else ''}"""
     else:
         return True if result1 and result2 else False
 
-def testTimeTables(TimeTables, ALL_SUBJECTS, mode):
-    """Applies testTimeTable function on all the timetables in the a list,
-    then returns a list of all the invalid timetables"""
+def testTimeTables(TimeTables: list[list[subject]], ALL_SUBJECTS: list[list[subject]], mode: bool):
+    """
+    Applies testTimeTable function on all the timetables in the a list,
+    then returns a list of all the invalid timetables
+    """
+
+    if type(TimeTables) != list:
+        raise ValueError("TimeTable Argument MUST be a list of list of subject objects, aka list of timetables")
+
     wrong_timetables = []
     condition = False
     for i in TimeTables:
@@ -279,10 +300,20 @@ def testTimeTables(TimeTables, ALL_SUBJECTS, mode):
         else:
             return f"All Timetables are valid."
 
-def testDuplicateTimeTables(TimeTables, mode):
-    """tests if the input list of timetables has any duplicates
+def testDuplicateTimeTables(TimeTables: list[list[subject]], mode: bool):
+    """
+    tests if the input list of timetables has any duplicates
     :mode True: returns how many distinct timetables there is
-    :mode False: returns a list of the duplicates as numbers according to the order of the timttables list"""
+    :mode False: returns a list of the duplicates as numbers according to the order of the timttables list 
+    """
+
+    if type(TimeTables) != list:
+        raise ValueError("TimeTable Argument MUST be a list of list of subject objects, aka list of timetables")
+
+    for TimeTable in TimeTables:
+        if type(TimeTable) != list or len(set([type(i) for i in TimeTable])) != 1 or type(TimeTable[0]) != subject:
+            raise ValueError("TimeTable in TimeTables Argument Must be list of subject class objects, aka a timetable")
+
     memo = []
     for n, i in enumerate(TimeTables):
         condition = True
@@ -310,11 +341,20 @@ def testDuplicateTimeTables(TimeTables, mode):
         else:
             return f"Duplicate Timetables: {filtered_memo}"
 
-def completeTest(wanted_subjects, TimeTables):
+def completeTest(wanted_subjects: list[subject], TimeTables: list[list[subject]]):
+    '''
+    tests duplication and overlapping subjects in one timetable time-wise in all timetables
+    '''
     ALL_SUBJECTS = generateAllSublist(wanted_subjects)
     print(testDuplicateTimeTables(TimeTables, False))  # testing for duplicate timetables
     print(testTimeTables(TimeTables, ALL_SUBJECTS, False))  # testing all timetables for validity
 
+def completeTestOneTimeTable(wanted_subjects: list[subject], TimeTable: list[subject]):
+    '''
+    tests overlapping subjects in one timetable time-wise in one timetable
+    '''
+    ALL_SUBJECTS = generateAllSublist(wanted_subjects)
+    print(testTimeTable(TimeTable, ALL_SUBJECTS, True))
 
 def createCSVlists(timeTables, mode):
     """
@@ -404,13 +444,6 @@ def exportTimeTable(timeTableList, mode):
 
                 for i in range(len(timeTableList[s])):
                     timeTable_writer.writerow(timeTableList[s][i])
-
-
-def makeTimeTables(wanted_subjects):
-    for i in wanted_subjects:
-        if not checkSubinMain(i):
-            raise LookupError(f"{i} not found in Main TimeTable")
-    return generateTimeTables(generateAllSublist(wanted_subjects), "debug")
 
 
 def exportCSV(TimeTable):
